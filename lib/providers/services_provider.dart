@@ -23,22 +23,26 @@ class ServicesProvider
 
     notifyListeners();
 
-    final snapshot = await firestoreService
-        .servicesCollection
-        .get();
+    try {
+      final snapshot = await firestoreService
+          .servicesCollection
+          .get();
 
-    services = snapshot.docs.map((doc) {
-      return ServiceModel.fromFirestore(
-        doc.data() as Map<String, dynamic>,
-        doc.id,
-      );
-    }).toList();
+      services = snapshot.docs.map((doc) {
+        return ServiceModel.fromFirestore(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
+      }).toList();
 
-    filteredServices = services;
+      filteredServices = services;
+    } catch (e) {
+      debugPrint('Failed to fetch services: $e');
+    } finally {
+      isLoading = false;
 
-    isLoading = false;
-
-    notifyListeners();
+      notifyListeners();
+    }
   }
 
   void filterByCategory(

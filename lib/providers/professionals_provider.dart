@@ -18,19 +18,23 @@ class ProfessionalsProvider
 
     notifyListeners();
 
-    final snapshot = await firestoreService
-        .professionalsCollection
-        .get();
+    try {
+      final snapshot = await firestoreService
+          .professionalsCollection
+          .get();
 
-    professionals = snapshot.docs.map((doc) {
-      return ProfessionalModel.fromFirestore(
-        doc.data() as Map<String, dynamic>,
-        doc.id,
-      );
-    }).toList();
+      professionals = snapshot.docs.map((doc) {
+        return ProfessionalModel.fromFirestore(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('Failed to fetch professionals: $e');
+    } finally {
+      isLoading = false;
 
-    isLoading = false;
-
-    notifyListeners();
+      notifyListeners();
+    }
   }
 }

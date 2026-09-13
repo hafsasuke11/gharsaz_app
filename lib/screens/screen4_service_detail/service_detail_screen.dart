@@ -71,6 +71,13 @@ class ServiceDetailScreen
               child: Image.network(
                 service.image,
                 height: 140,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(
+                    Icons.home_repair_service,
+                    size: 100,
+                    color: Colors.green,
+                  );
+                },
               ),
             ),
 

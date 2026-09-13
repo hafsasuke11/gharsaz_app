@@ -42,7 +42,18 @@ class ProfessionalCard extends StatelessWidget {
             radius: 38,
 
             backgroundImage:
-            NetworkImage(professional.image),
+            professional.image.isEmpty
+                ? null
+                : NetworkImage(professional.image),
+
+            onBackgroundImageError:
+            professional.image.isEmpty
+                ? null
+                : (exception, stackTrace) {},
+
+            child: professional.image.isEmpty
+                ? const Icon(Icons.person, size: 38)
+                : null,
           ),
 
           const SizedBox(width: 18),

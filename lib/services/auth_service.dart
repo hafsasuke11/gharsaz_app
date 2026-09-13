@@ -16,7 +16,7 @@ class AuthService {
     onError,
   }) async {
     await auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
+      phoneNumber: AuthService.toE164(phoneNumber),
 
       verificationCompleted:
           (PhoneAuthCredential credential) async {
@@ -42,6 +42,20 @@ class AuthService {
       codeAutoRetrievalTimeout:
           (String verificationId) {},
     );
+  }
+
+  /// Firebase Phone Auth requires E.164 (e.g. +923001234567). Users type
+  /// local Pakistani numbers like 03001234567, so convert those here.
+  static String toE164(String phoneNumber) {
+    final digits = phoneNumber.trim();
+
+    if (digits.startsWith('+')) return digits;
+
+    if (digits.startsWith('0')) {
+      return '+92${digits.substring(1)}';
+    }
+
+    return '+92$digits';
   }
 
   Future<bool> signInWithOTP({

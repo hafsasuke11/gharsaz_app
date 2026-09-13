@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../models/booking_model.dart';
@@ -18,20 +19,32 @@ class BookingProvider
 
     notifyListeners();
 
-    final snapshot = await firestoreService
-        .bookingsCollection
-        .get();
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
 
-    bookings = snapshot.docs.map((doc) {
-      return BookingModel.fromFirestore(
-        doc.data() as Map<String, dynamic>,
-        doc.id,
-      );
-    }).toList();
+      if (userId == null) {
+        bookings = [];
+        return;
+      }
 
-    isLoading = false;
+      final snapshot = await firestoreService
+          .bookingsCollection
+          .where('userId', isEqualTo: userId)
+          .get();
 
-    notifyListeners();
+      bookings = snapshot.docs.map((doc) {
+        return BookingModel.fromFirestore(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('Failed to fetch bookings: $e');
+    } finally {
+      isLoading = false;
+
+      notifyListeners();
+    }
   }
 
   Future<void> addBooking({
@@ -47,6 +60,9 @@ class BookingProvider
     final bookingId = bookingRef.id;
 
     await bookingRef.set({
+      'userId':
+      FirebaseAuth.instance.currentUser?.uid,
+
       'professionalName':
       professionalName,
 
@@ -64,49 +80,61 @@ class BookingProvider
     Future.delayed(
       const Duration(minutes: 5),
           () async {
-        final bookingDoc =
-        await firestoreService
-            .bookingsCollection
-            .doc(bookingId)
-            .get();
-
-        if (!bookingDoc.exists) {
-          return;
-        }
-
-        final data =
-        bookingDoc.data()
-        as Map<String, dynamic>?;
-
-        if (data == null) {
-          return;
-        }
-
-        if (data['status'] !=
-            'Cancelled') {
+        try {
+          final bookingDoc =
           await firestoreService
               .bookingsCollection
               .doc(bookingId)
-              .update({
-            'status': 'On The Way',
-          });
+              .get();
 
-          fetchBookings();
+          if (!bookingDoc.exists) {
+            return;
+          }
+
+          final data =
+          bookingDoc.data()
+          as Map<String, dynamic>?;
+
+          if (data == null) {
+            return;
+          }
+
+          if (data['status'] !=
+              'Cancelled') {
+            await firestoreService
+                .bookingsCollection
+                .doc(bookingId)
+                .update({
+              'status': 'On The Way',
+            });
+
+            fetchBookings();
+          }
+        } catch (e) {
+          debugPrint('Auto status update failed: $e');
         }
       },
     );
   }
 
-  Future<void> cancelBooking(
+  Future<bool> cancelBooking(
       String bookingId,
       ) async {
-    await firestoreService
-        .bookingsCollection
-        .doc(bookingId)
-        .update({
-      'status': 'Cancelled',
-    });
+    try {
+      await firestoreService
+          .bookingsCollection
+          .doc(bookingId)
+          .update({
+        'status': 'Cancelled',
+      });
 
-    await fetchBookings();
+      await fetchBookings();
+
+      return true;
+    } catch (e) {
+      debugPrint('Failed to cancel booking: $e');
+
+      return false;
+    }
   }
 }

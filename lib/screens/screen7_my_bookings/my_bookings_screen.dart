@@ -7,10 +7,28 @@ import '../../providers/booking_provider.dart';
 import '../../widgets/side_drawer.dart';
 
 class MyBookingsScreen
-    extends StatelessWidget {
+    extends StatefulWidget {
   const MyBookingsScreen({
     super.key,
   });
+
+  @override
+  State<MyBookingsScreen> createState() =>
+      _MyBookingsScreenState();
+}
+
+class _MyBookingsScreenState
+    extends State<MyBookingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      context.read<BookingProvider>().fetchBookings();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +55,11 @@ class MyBookingsScreen
         centerTitle: true,
       ),
 
-      body: bookings.isEmpty
+      body: bookingProvider.isLoading
+          ? const Center(
+        child: CircularProgressIndicator(),
+      )
+          : bookings.isEmpty
           ? const Center(
         child: Text(
           'No active bookings',
