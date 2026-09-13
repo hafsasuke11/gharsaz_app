@@ -45,6 +45,14 @@ class ServicesProvider
     }
   }
 
+  bool _sameCategory(
+      String a,
+      String b,
+      ) {
+    return a.trim().toLowerCase() ==
+        b.trim().toLowerCase();
+  }
+
   void filterByCategory(
       String category,
       ) {
@@ -56,8 +64,10 @@ class ServicesProvider
       filteredServices = services.where((
           service,
           ) {
-        return service.category ==
-            category;
+        return _sameCategory(
+          service.category,
+          category,
+        );
       }).toList();
     }
 
@@ -69,8 +79,10 @@ class ServicesProvider
     selectedCategory == 'All'
         ? services
         : services.where((service) {
-      return service.category ==
-          selectedCategory;
+      return _sameCategory(
+          service.category,
+          selectedCategory,
+      );
     }).toList();
 
     if (query.isEmpty) {
