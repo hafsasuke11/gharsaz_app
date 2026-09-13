@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "17641739017",
+    "project_id": "gharsaz-e77e7",
+    "storage_bucket": "gharsaz-e77e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17641739017:android:658168e7dda3bdf696b9d8",
+        "android_client_info": {
+          "package_name": "com.example.gharsaz_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6Bb96RiIms9B-HzvhinCr7mZln7kdYCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17641739017:android:ff02c5b981d09a7d96b9d8",
+        "android_client_info": {
+          "package_name": "com.gharsaz.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6Bb96RiIms9B-HzvhinCr7mZln7kdYCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
